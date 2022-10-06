@@ -4,7 +4,25 @@ plugins {
     id 'maven-publish'
 }
 
-group groupName.toString()
+def ARTIFACT_NAME = 'ui-common'
+def GROUP_NAME = groupName.toString()
+def VERSION_NAME = versionName.toString()
+
+group GROUP_NAME
+version VERSION_NAME
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = GROUP_NAME
+                artifactId = ARTIFACT_NAME
+                version = VERSION_NAME
+            }
+        }
+    }
+}
 
 android {
     compileSdk 32
