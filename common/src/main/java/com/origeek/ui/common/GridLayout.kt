@@ -64,21 +64,59 @@ fun GridLayout(
     }
 }
 
+class LazyGridLayoutState {
+
+    lateinit var lazyListState: LazyListState
+
+    var columns = 0
+        internal set
+
+    private fun getScrollIndex(index: Int): Int {
+        return index.div(columns)
+    }
+
+    suspend fun scrollToItem(
+        index: Int,
+        scrollOffset: Int = 0
+    ) {
+        lazyListState.scrollToItem(getScrollIndex(index), scrollOffset)
+    }
+
+    suspend fun animateScrollToItem(
+        index: Int,
+        scrollOffset: Int = 0
+    ) {
+        lazyListState.animateScrollToItem(getScrollIndex(index), scrollOffset)
+    }
+
+}
+
+@Composable
+fun rememberLazyGridLayoutState(): LazyGridLayoutState {
+    val lazyListState = rememberLazyListState()
+    val lazyGridState = remember {
+        LazyGridLayoutState()
+    }
+    lazyGridState.lazyListState = lazyListState
+    return lazyGridState
+}
+
 @Composable
 fun LazyGridLayout(
     modifier: Modifier = Modifier,
     columns: Int,
     size: Int,
     padding: Dp = 0.dp,
-    state: LazyListState = rememberLazyListState(),
+    state: LazyGridLayoutState = rememberLazyGridLayoutState(),
     contentPadding: PaddingValues = PaddingValues(),
     block: @Composable (Int) -> Unit,
 ) {
     val line = ceil(size.toDouble() / columns).toInt()
     val halfPadding = padding.div(2)
+    state.columns = columns
     LazyColumn(
         modifier = modifier,
-        state = state,
+        state = state.lazyListState,
         content = {
             items(count = line, key = { it }) { c ->
                 if (c != 0) Spacer(modifier = Modifier.height(halfPadding))
@@ -103,15 +141,19 @@ fun LazyGridLayout(
     )
 }
 
+const val DEFAULT_GRID_SCALE_SIZE = 0.84F
+
 @Composable
 fun ScaleGrid(
+    modifier: Modifier = Modifier,
+    scaleSize: Float = DEFAULT_GRID_SCALE_SIZE,
     onTap: () -> Unit = {},
-    content: @Composable () -> Unit = {},
+    content: @Composable (Float) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val itemScale = remember { Animatable(1F) }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(itemScale.value)
             .pointerInput(Unit) {
                 forEachGesture {
@@ -119,7 +161,7 @@ fun ScaleGrid(
                         awaitFirstDown()
                         // 这里开始
                         scope.launch {
-                            itemScale.animateTo(0.84F)
+                            itemScale.animateTo(scaleSize)
                         }
                         var move = false
                         do {
@@ -141,6 +183,6 @@ fun ScaleGrid(
                 }
             }
     ) {
-        content()
+        content(itemScale.value)
     }
 }
