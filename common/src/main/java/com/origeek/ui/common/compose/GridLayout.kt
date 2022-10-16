@@ -1,4 +1,4 @@
-package com.origeek.ui.common
+package com.origeek.ui.common.compose
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.awaitFirstDown
