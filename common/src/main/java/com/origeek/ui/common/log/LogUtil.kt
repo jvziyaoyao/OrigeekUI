@@ -1,4 +1,4 @@
-package com.origeek.ui.common
+package com.origeek.ui.common.log
 
 import android.util.Log
 
