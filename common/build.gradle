@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-def ARTIFACT_NAME = 'ui-common'
+def ARTIFACT_NAME = 'OrigeekUI'
 def GROUP_NAME = groupName.toString()
 def VERSION_NAME = versionName.toString()
 
