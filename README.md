@@ -1,7 +1,7 @@
 # OrigeekUI
 🗃 A collection of extension libraries for Jetpack Compose
 
-[![](https://www.jitpack.io/v/jvziyaoyao/ImagePicker.svg)](https://www.jitpack.io/#jvziyaoyao/ImagePicker)
+[![](https://www.jitpack.io/v/jvziyaoyao/OrigeekUI.svg)](https://www.jitpack.io/#jvziyaoyao/OrigeekUI)
 
 🎯 Install
 --------
