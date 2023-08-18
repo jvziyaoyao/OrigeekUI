@@ -27,22 +27,21 @@ import kotlinx.coroutines.launch
 const val DEFAULT_GRID_SCALE_SIZE = 0.84F
 const val DEFAULT_LONG_PRESS_TIME = 400L
 
-class ScaleGestureScope {
-    var onPress: () -> Unit = {}
-    var onLongPress: () -> Unit = {}
-}
+class DetectScaleGridGesture(
+    var onPress: () -> Unit = {},
+    var onLongPress: () -> Unit = {},
+)
 
 @Composable
 fun ScaleGrid(
     modifier: Modifier = Modifier,
     scaleSize: Float = DEFAULT_GRID_SCALE_SIZE,
     longPressTime: Long = DEFAULT_LONG_PRESS_TIME,
-    detectGesture: ScaleGestureScope.() -> Unit = {},
+    detectGesture: DetectScaleGridGesture? = null,
     content: @Composable (Float) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val itemScale = remember { Animatable(1F) }
-    val scaleGestureScope = remember { ScaleGestureScope() }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -50,7 +49,7 @@ fun ScaleGrid(
                 scaleX = itemScale.value
                 scaleY = itemScale.value
             }
-            .pointerInput(detectGesture(scaleGestureScope)) {
+            .pointerInput(detectGesture) {
                 awaitEachGesture {
                     awaitFirstDown()
                     // 这里开始
@@ -68,11 +67,11 @@ fun ScaleGrid(
                                 }
                             } while (event.changes.any { it.pressed })
                             if (!move) {
-                                scaleGestureScope.onPress()
+                                detectGesture?.onPress?.invoke()
                             }
                         }
                     } catch (e: Exception) {
-                        scaleGestureScope.onLongPress()
+                        detectGesture?.onLongPress?.invoke()
                     }
                     // 这里结束
                     scope.launch {
